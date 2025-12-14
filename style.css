@@ -1,0 +1,50 @@
+:root {
+	--bgColor: skyblue;
+	--fgColor: black;
+	--primaryColor: black;
+}
+
+html, body {
+	margin: 0;
+	padding: 0;
+	background: var(--bgColor);
+	color: var(--fgColor);
+	font-family: sans;
+	overflow: hidden;
+}
+
+#overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 10;
+}
+#title {
+	font-weight: bold;
+	margin: 0;
+}
+#desc {
+	font-size: 1.4rem;
+	font-weight: light;
+	margin: 0;
+	color: var(--primaryColor);
+}
+
+#content {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1;
+}
+#fpsStats {
+	font-weight: 600; /*semibold*/
+}
+#grassBg {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	z-index: 0;
+}
