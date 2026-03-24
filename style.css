@@ -1,28 +1,58 @@
+@font-face {
+	font-family: "SF Pro Display";
+	src: url("/fonts/SFPRODISPLAYREGULAR.OTF");
+	font-weight: normal;
+}
+@font-face {
+	font-family: "SF Pro Display";
+	src: url("/fonts/SFPRODISPLAYMEDIUM.OTF");
+	font-weight: 600;
+}
+@font-face {
+	font-family: "SF Pro Display";
+	src: url("/fonts/SFPRODISPLAYBOLD.OTF");
+	font-weight: bold;
+}
+
 :root {
-	--bgColor: skyblue;
-	--fgColor: black;
-	--primaryColor: black;
+	--color-bg: skyblue;
+	--color-fg: #002B5B;
 }
 
 html, body {
 	margin: 0;
 	padding: 0;
-	background: var(--bgColor);
-	color: var(--fgColor);
+	background: var(--color-bg);
+	color: var(--color-fg);
 	font-family: sans;
 	overflow: hidden;
 }
 
-#overlay {
+#fmis {
 	position: absolute;
-	top: 0;
-	left: 0;
+	top: 1rem; left: 1rem;
 	z-index: 10;
-}
-#title {
+	font-family: "SF Pro Display";
+	line-height: 1;
 	font-weight: bold;
+	color: var(--color-fg);
+	font-size: 1.4rem;
+	text-decoration: none;
 	margin: 0;
+	cursor: pointer;
 }
+#fmis>span {
+	font-weight: 600;
+}
+#farm-name {
+	position: absolute;
+	top: 1rem; right: 1rem;
+	z-index: 10;
+	font-size: 2rem;
+	color: var(--color-fg);
+	font-weight: bold;
+}
+
 #desc {
 	font-size: 1.4rem;
 	font-weight: light;
@@ -47,4 +77,94 @@ html, body {
 	height: 100%;
 	object-fit: cover;
 	z-index: 0;
+}
+
+@keyframes slide-in {
+	from {
+		opacity: 0;
+		transform: translate(0, 50%);
+	}
+	to {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+}
+
+@keyframes slide-out {
+	from {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+	to {
+		opacity: 0;
+		transform: translate(0, -50%);
+	}
+}
+
+
+.slide-in {
+	animation: slide-in 400ms ease-in-out forwards;
+}
+.slide-out {
+	animation: slide-out 400ms ease-in-out forwards;
+}
+
+.bottom-label {
+	position: absolute;
+	bottom: 1rem; left: 1rem;
+	z-index: 10;
+	text-shadow: 2px 2px 4px #000;
+	color: white;
+}
+.bottom-label-name {
+	font-weight: bold;
+	font-size: 3rem;
+	letter-spacing: -2px;
+}
+.bottom-label-desc {
+	font-weight: normal;
+	font-size: 1.2rem;
+}
+.hover-label {
+	text-shadow: 2px 2px 4px #000;
+	color: white;
+}
+.hover-label-name {
+	font-weight: bold;
+	font-size: 2rem;
+	letter-spacing: -2px;
+	line-height: 0.8;
+}
+.hover-label-desc {
+	font-weight: normal;
+	font-size: 1rem;
+}
+
+@keyframes x-in {
+	from { transform: translate(100%, -50%); }
+	to { transform: translate(-50%, -50%); }
+}
+@keyframes x-out {
+	from { transform: translate(-50%, -50%); }
+	to { transform: translate(100%, -50%); }
+}
+.x-in {
+	animation: x-in 800ms ease-in-out 200ms forwards;
+}
+.x-out {
+	animation: x-out 800ms ease-in-out forwards;
+}
+
+.overlay {
+	position: absolute;
+	top: 50%; left: 50%;
+	width: 80vw; height: 80vh;
+	transform: translate(100%, -50%);
+	background: var(--color-fg);
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2rem;
+	color: white;
 }

@@ -1,19 +1,19 @@
 {
-  "name": "FMIS Infographic",
-  "version": "1.0.0",
-  "description": "FMIS Infographic",
-  "license": "ISC",
-  "author": "high-haseeb",
-  "type": "commonjs",
-  "main": "main.js",
-  "scripts": {
-    "dev": "vite --port 6969",
-	"build": "vite build"
-  },
-  "devDependencies": {
-    "vite": "^7.2.7"
-  },
-  "dependencies": {
-    "three": "^0.182.0"
-  }
+	"name": "FMIS Infographic",
+	"version": "1.0.0",
+	"description": "FMIS Infographic",
+	"license": "ISC",
+	"author": "high-haseeb",
+	"type": "commonjs",
+	"main": "main.js",
+	"scripts": {
+		"dev": "vite --port 6969",
+		"build": "vite build"
+	},
+	"devDependencies": {
+		"vite": "^7.2.7"
+	},
+	"dependencies": {
+		"three": "^0.183.2"
+	}
 }
