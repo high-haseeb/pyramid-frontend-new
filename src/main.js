@@ -18,8 +18,6 @@ import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLigh
 
 let camera, renderer;
 let scene;
-let gui;
-// let composer;
 let sky, sun;
 let skyMat;
 let plane;
@@ -49,24 +47,28 @@ const labels = [
 		desc: "Umsatz, Kosten und Profitabilität überwachen",
 		icon: "/euro.png",
 		el: null, btmEl: null,
+		overlayImageSrc: "finance.png"
 	},
 	{ // product
 		name: "Produkt",
 		desc: "Produktleistung, Funktionen und Qualität überwachen",
 		icon: "/package.png",
 		el: null, btmEl: null,
+		overlayImageSrc: "product.png"
 	},
 	{ // internalProcess
 		name: "Interne Prozesse",
 		desc: "Leistungsfähigkeit und Stabilität der Arbeitsabläufe beurteilen",
 		icon: "/gear.png",
 		el: null, btmEl: null,
+		overlayImageSrc: "internal.png"
 	},
 	{ // resources
 		name: "Ressourcen",
 		desc: "Teamkapazitäten, Tools und Infrastruktur verwalten",
 		icon: "/group.png",
 		el: null, btmEl: null,
+		overlayImageSrc: "resource.png"
 	}
 ];
 
@@ -505,6 +507,7 @@ async function init() {
 
 const pyramidLeft = -4;
 const pyramidBack = -3;
+let offToSide = false;
 
 function onMouseClick() {
 	if (activeSection < 0)  return;
@@ -512,16 +515,93 @@ function onMouseClick() {
 		showOverlay(labels[activeSection]);
 	}
 
+
 	const params = { t: 0, back: 0 };
 	new TWEEN.Tween(params).to({ t: pyramidLeft, back: pyramidBack }).onUpdate(() => {
 		pyramidGroup.position.x = params.t;
 		pyramidGroup.position.z = params.back;
-	}).start();
+	}).start().onComplete(() => {
+		offToSide = true;
+	});
 }
 
 const overlayEl = document.getElementById('overlay');
+const overlayBack = document.getElementById('overlay-back');
 
-overlayEl.addEventListener('click', () => {
+const helperTexts = {
+	Finanzen: [
+		{ text: "", x: 0, y: 0, w: 0, h: 0 },
+	],
+
+	Produkt: [
+		{ text: "Leistung auf einen Blick", x: 0.06, y: 0.09, w: 0.2, h: 0.26 },
+		{ text: "Zeigt Produktivität unabhängig von Herdengröße", x: 0.21, y: 0.09, w: 0.35, h: 0.26 },
+		{ text: "Ideal für schnelle Trend‑Checks im Alltag", x: 0.35, y: 0.09, w: 0.49, h: 0.26 },
+		{ text: "Kraftfutterkosten pro kg Milch – macht Fütterungseffizienz sofort vergleichbar", x: 0.50, y: 0.09, w: 0.64, h: 0.26 },
+		{ text: "Deckungsbeitrag je Kuh nach Futterkosten – zeigt, wie wirtschaftlich die Leistung wirklich ist", x: 0.65, y: 0.09, w: 0.79, h: 0.26 },
+		{ text: "Durchschnittliche Laktationsphase – liefert Kontext für Leistung, Gesundheit und Fütterungsniveau", x: 0.80, y: 0.09, w: 0.97, h: 0.26 },
+		{ text: "Tagesmenge im Verlauf – zeigt sofort Leistungstrends und Ausreißer Leistung je Kuh über die Zeit – perfekt für Management‑Vergleiche und ZielsteuerungLeistung je Kuh über die Zeit – perfekt für Management‑Vergleiche und Zielsteuerung Kraftfuttereinsatz je Kuh – macht Effizienz und Kostenwirkung sichtbar", x: 0.22, y: 0.34, w: 0.78, h: 0.84 },
+	],
+
+	"Interne Prozesse": [
+		{ text: "", x: 0, y: 0, w: 0, h: 0 },
+	],
+
+	Ressourcen: [
+		{ text: "", x: 0, y: 0, w: 0, h: 0 },
+	]
+
+};
+
+
+function setupOverlayHelper(label) {
+	const helperEl = document.getElementById("overlay-helper");
+
+	let visible = false;
+	const helperText = helperTexts[label.name];
+	const overlayElImg = overlayEl.children[0];
+
+	overlayElImg.addEventListener('mousemove', (e) => {
+		const rect = overlayElImg.getBoundingClientRect();
+
+		const px = (e.clientX - rect.left) / rect.width;
+		const py = (e.clientY - rect.top) / rect.height;
+
+		let activeText = "";
+
+		for (const zone of helperText) {
+			if (
+				px >= zone.x &&
+				px <= zone.w &&
+				py >= zone.y &&
+				py <= zone.h
+			) {
+				activeText = zone.text;
+				break;
+			}
+		}
+
+		if (activeText) {
+			helperEl.innerText = activeText;
+			helperEl.style.opacity = "1";
+			visible = true;
+		} else {
+			helperEl.innerText = `${px.toFixed(4)}, ${py.toFixed(4)}`;
+			// helperEl.style.opacity = "0";
+			// visible = false;
+		}
+
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+
+		const scale = visible ? 1 : 0.95;
+
+		const helperRect = helperEl.getBoundingClientRect();
+		helperEl.style.transform = `translate(${x - helperRect.width}px, ${y - helperRect.height}px) scale(${scale})`;  
+	});
+}
+
+overlayBack.addEventListener('click', () => {
 	overlayEl.classList.remove('x-int');
 	overlayEl.classList.add('x-out');
 
@@ -529,23 +609,26 @@ overlayEl.addEventListener('click', () => {
 	new TWEEN.Tween(params).to({ t: 0, back: 0 }).onUpdate(() => {
 		pyramidGroup.position.x = params.t;
 		pyramidGroup.position.z = params.back;
-	}).start();
+	}).start().onComplete(() => {
+		offToSide = false;
+	});
 });
 
 function showOverlay(label) {
 	overlayEl.classList.remove('x-out');
 	overlayEl.classList.add('x-in');
-	overlayEl.innerText = label.name;
-
-	const params = { t: 0 };
-	new TWEEN.Tween(params).to({ t: -5 }).onUpdate(() => {
-		pyramidGroup.position.x = params.t;
-	}).start();
+	overlayEl.children[0].src = label.overlayImageSrc;
+	setupOverlayHelper(label);
 }
 
 function onMouseMove(e) {
 	mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
 	mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+}
+
+function raycasterUpdate() {
+
+	if (offToSide) return;
 
 	raycaster.setFromCamera(mouse, camera);
 	const hit = raycaster.intersectObjects(proxies, false);
@@ -631,6 +714,8 @@ function animate() {
 	timer.update();
 	TWEEN.update();
 	const delta = timer.getDelta();
+
+	raycasterUpdate();
 
 	pyramidGroupInternal.rotation.y += delta;
 

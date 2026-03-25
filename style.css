@@ -141,12 +141,24 @@ html, body {
 }
 
 @keyframes x-in {
-	from { transform: translate(200%, -50%); }
-	to { transform: translate(-20%, -50%); }
+	from { 
+		opacity: 0;
+		transform: translate(100%, -50%);
+	}
+	to { 
+		opacity: 1;
+		transform: translate(-20%, -50%);
+	}
 }
 @keyframes x-out {
-	from { transform: translate(-20%, -50%); }
-	to { transform: translate(200%, -50%); }
+	from { 
+		opacity: 1;
+		transform: translate(-20%, -50%);
+	}
+	to { 
+		opacity: 0;
+		transform: translate(100%, -50%);
+	}
 }
 .x-in {
 	animation: x-in 800ms ease-in-out 200ms forwards;
@@ -158,7 +170,7 @@ html, body {
 .overlay {
 	position: absolute;
 	top: 50%; left: 50%;
-	width: 50vw; height: 80vh;
+	width: 55vw; height: 70vh;
 	transform: translate(100%, -50%);
 	background: var(--color-fg);
 	z-index: 1000;
@@ -168,3 +180,41 @@ html, body {
 	font-size: 2rem;
 	color: white;
 }
+
+.overlay-img {
+	width: 100%; height: 100%;
+	object-fit: contain;
+}
+#overlay-back {
+	position: absolute;
+	top: 0; left: 0;
+	transform: translate(-50%, -50%);
+	border: none;
+	background: var(--color-fg);
+	border-radius: 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem; height: 2rem;
+	border: 2px solid #EEE;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+#overlay-helper {
+	position: fixed;
+	top: 0;
+	left: 0;
+	max-width: 16rem;
+	height: auto;
+	padding: 0.5rem;
+	background: white;
+	border: 2px solid var(--color-fg);
+	border-radius: 8px;
+	color: black;
+	font-size: 1rem;
+	transition: opacity 0.2s ease, transform 0.2s ease;
+	opacity: 0;
+	pointer-events: none;
+}
+
