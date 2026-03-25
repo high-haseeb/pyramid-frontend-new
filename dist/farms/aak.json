@@ -1,0 +1,30 @@
+{
+    "name": "Aalberts Krap",
+    "link": "https://aalbertskarade.sharepoint.com/sites/Aalberts-Krap",
+    "sections": [
+        {
+            "name": "Finanzen",
+            "desc": "Finanzbericht",
+            "icon": "/euro.png",
+            "link": "https://fmis.aalberts-kara.de/aak/finanzen/"
+        },
+        {
+            "name": "Produkt",
+            "desc": "Milchproduktion",
+            "icon": "/package.png",
+            "link": "https://fmis.aalberts-kara.de/aak/produkt/"
+        },
+        {
+            "name": "Interne Prozesse",
+            "desc": "Herdemanagement",
+            "icon": "/gear.png",
+            "link": "https://fmis.aalberts-kara.de/aak/interne-prozesse/"
+        },
+        {
+            "name": "Ressourcen",
+            "desc": "Klimabilanz",
+            "icon": "/group.png",
+            "link": "https://fmis.aalberts-kara.de/aak/ressourcen/"
+        }
+    ]
+}

@@ -503,7 +503,8 @@ async function init() {
 	window.addEventListener('click', onMouseClick);
 }
 
-const pyramidLeft = -7;
+const pyramidLeft = -4;
+const pyramidBack = -3;
 
 function onMouseClick() {
 	if (activeSection < 0)  return;
@@ -511,9 +512,10 @@ function onMouseClick() {
 		showOverlay(labels[activeSection]);
 	}
 
-	const params = { t: 0 };
-	new TWEEN.Tween(params).to({ t: pyramidLeft }).onUpdate(() => {
+	const params = { t: 0, back: 0 };
+	new TWEEN.Tween(params).to({ t: pyramidLeft, back: pyramidBack }).onUpdate(() => {
 		pyramidGroup.position.x = params.t;
+		pyramidGroup.position.z = params.back;
 	}).start();
 }
 
@@ -523,9 +525,10 @@ overlayEl.addEventListener('click', () => {
 	overlayEl.classList.remove('x-int');
 	overlayEl.classList.add('x-out');
 
-	const params = { t: pyramidLeft };
-	new TWEEN.Tween(params).to({ t: 0 }).onUpdate(() => {
+	const params = { t: pyramidLeft, back: pyramidBack };
+	new TWEEN.Tween(params).to({ t: 0, back: 0 }).onUpdate(() => {
 		pyramidGroup.position.x = params.t;
+		pyramidGroup.position.z = params.back;
 	}).start();
 });
 
