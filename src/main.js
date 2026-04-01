@@ -16,6 +16,8 @@ import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLigh
 //import { RenderTransitionPass } from "three/examples/jsm/postprocessing/RenderTransitionPass.js";
 // import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js"
 
+const BASE = import.meta.env.BASE_URL;
+
 let camera, renderer;
 let scene;
 let sky, sun;
@@ -281,7 +283,7 @@ function pyramidMaterial() {
 }
 
 async function getIcon(path) {
-	const map = await loader.loadAsync(`/icons/${path}`);
+    const map = await loader.loadAsync(`${BASE}icons/${path}`);
 	const geo = new THREE.PlaneGeometry(1, 1);
 	const mat = new THREE.MeshStandardMaterial({ 
 		map: map,
@@ -457,7 +459,7 @@ function updateGrass() {
 }
 
 async function grassPlane() {
-	const grassmap = await loader.loadAsync("/grass.webp");
+    const grassmap = await loader.loadAsync(`${BASE}grass.webp`);
 	grassmap.colorSpace = THREE.SRGBColorSpace;
 	textureAspect = grassmap.width/grassmap.height;
 
@@ -670,7 +672,7 @@ overlayBack.addEventListener('click', () => {
 function showOverlay(label) {
 	// overlayEl.classList.remove('x-out');
 	// overlayEl.classList.add('x-in');
-	overlayEl.children[0].src = `/images/${label.overlayImageSrc}`;
+    overlayEl.children[0].src = `${BASE}images/${label.overlayImageSrc}`;
 	setupOverlayHelper(label);
 }
 
