@@ -26,6 +26,7 @@ html, body {
 	color: var(--color-fg);
 	font-family: sans;
 	overflow: hidden;
+	font-optical-sizing: auto;
 }
 
 #fmis {
@@ -45,12 +46,17 @@ html, body {
 	font-weight: 600;
 }
 #farm-name {
+	font-family: "Playfair Display", serif;
 	position: absolute;
-	top: 1rem; right: 1rem;
+	top: 1rem; right: 2rem;
 	z-index: 10;
 	font-size: 2rem;
 	color: var(--color-fg);
-	font-weight: bold;
+	color: white;
+	text-shadow: 2px 2px 4px black;
+	font-weight: 800;
+	user-select: none;
+	cursor: pointer;
 }
 
 #desc {
@@ -133,45 +139,34 @@ html, body {
 	font-weight: bold;
 	font-size: 2rem;
 	letter-spacing: -2px;
-	line-height: 0.8;
 }
 .hover-label-desc {
-	font-weight: normal;
+	font-weight: 600;
 	font-size: 1rem;
 }
 
-@keyframes x-in {
-	from { 
-		opacity: 0;
-		transform: translate(100%, -50%);
-	}
-	to { 
-		opacity: 1;
-		transform: translate(-20%, -50%);
-	}
-}
-@keyframes x-out {
-	from { 
-		opacity: 1;
-		transform: translate(-20%, -50%);
-	}
-	to { 
-		opacity: 0;
-		transform: translate(100%, -50%);
-	}
-}
-.x-in {
-	animation: x-in 800ms ease-in-out 200ms forwards;
-}
-.x-out {
-	animation: x-out 800ms ease-in-out forwards;
-}
+/* @keyframes x-in { */
+/* 	from { opacity: 0; } */
+/* 	to { opacity: 1; } */
+/* } */
+/* @keyframes x-out { */
+/* 	from { opacity: 1; } */
+/* 	to { opacity: 0; } */
+/* } */
+/* .x-in { */
+/* 	animation: x-in 800ms ease-in-out 200ms forwards; */
+/* } */
+/* .x-out { */
+/* 	animation: x-out 800ms ease-in-out forwards; */
+/* } */
 
 .overlay {
 	position: absolute;
 	top: 50%; left: 50%;
 	width: 55vw; height: 70vh;
-	transform: translate(100%, -50%);
+	transform: translate(50%, -50%);
+	opacity: 0;
+	transition: opacity 200ms linear;
 	background: var(--color-fg);
 	z-index: 1000;
 	display: flex;

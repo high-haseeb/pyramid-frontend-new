@@ -46,7 +46,7 @@ const labels = [
 		name: "Finanzen",
 		desc: "Umsatz, Kosten und Profitabilität überwachen",
 		icon: "/euro.png",
-		el: null, btmEl: null,
+		hoverEl: null, btmEl: null,
 		overlayImageSrc: "finance.png"
 	},
 	{ // product
@@ -144,7 +144,7 @@ function initSky() {
 
 function hideLabels() {
 	for (const label of labels) {
-		if (label.el) label.el.classList.add('slide-out');
+		if (label.hoverEl) label.hoverEl.classList.add('slide-out');
 		if (label.btmEl) label.btmEl.classList.add('slide-out');
 	}
 }
@@ -152,9 +152,9 @@ function hideLabels() {
 function showLabel(labelIndex) {
 
 	const label = labels[labelIndex];
-	if (label.el) {
-		label.el.classList.remove('slide-out');
-		label.el.classList.add('slide-in');
+	if (label.hoverEl) {
+		label.hoverEl.classList.remove('slide-out');
+		label.hoverEl.classList.add('slide-in');
 	}
 	if (label.btmEl) {
 		label.btmEl.classList.remove('slide-out');
@@ -191,34 +191,34 @@ function setupLabels() {
 			labelEl.appendChild(descEl);
 			document.body.appendChild(labelEl);
 
-			label.el = labelEl;
+			label.hoverEl = labelEl;
 		}
 
 		// bottom labels
 		{
-			const labelEl = document.createElement('div');
-			const nameEl = document.createElement('div');
-			const descEl =  document.createElement('div');
-
-			nameEl.innerText = label.name;
-			descEl.innerText = label.desc;
-
-			descEl.classList.add('bottom-label-desc');
-			nameEl.classList.add('bottom-label-name');
-			labelEl.classList.add('bottom-label');
-
-			labelEl.style.zIndex = '100';
-			labelEl.style.position = 'absolute';
-			labelEl.style.bottom = '1rem';
-			labelEl.style.left = '1rem';
-
-			labelEl.style.opacity = '0.5';
-
-			labelEl.appendChild(nameEl);
-			labelEl.appendChild(descEl);
-			document.body.appendChild(labelEl);
-
-			label.btmEl = labelEl;
+			// const labelEl = document.createElement('div');
+			// const nameEl = document.createElement('div');
+			// const descEl =  document.createElement('div');
+			//
+			// nameEl.innerText = label.name;
+			// descEl.innerText = label.desc;
+			//
+			// descEl.classList.add('bottom-label-desc');
+			// nameEl.classList.add('bottom-label-name');
+			// labelEl.classList.add('bottom-label');
+			//
+			// labelEl.style.zIndex = '100';
+			// labelEl.style.position = 'absolute';
+			// labelEl.style.bottom = '1rem';
+			// labelEl.style.left = '1rem';
+			//
+			// labelEl.style.opacity = '0.5';
+			//
+			// labelEl.appendChild(nameEl);
+			// labelEl.appendChild(descEl);
+			// document.body.appendChild(labelEl);
+			//
+			// label.btmEl = labelEl;
 		}
 	}
 }
@@ -510,18 +510,22 @@ const pyramidBack = -3;
 let offToSide = false;
 
 function onMouseClick() {
-	if (activeSection < 0)  return;
-	if (labels[activeSection]) {
-		showOverlay(labels[activeSection]);
-	}
+	const label = labels[activeSection];
+	if ((activeSection < 0) || (!label))  return;
 
+	showOverlay(labels[activeSection]);
 
 	const params = { t: 0, back: 0 };
 	new TWEEN.Tween(params).to({ t: pyramidLeft, back: pyramidBack }).onUpdate(() => {
 		pyramidGroup.position.x = params.t;
 		pyramidGroup.position.z = params.back;
+
+		overlayEl.style.transform = `translate(calc(${-(params.t/pyramidLeft)*100}% + 50%), -50%)`;
+
 	}).start().onComplete(() => {
 		offToSide = true;
+	}).onStart(() => {
+		overlayEl.style.opacity = 1;
 	});
 }
 
@@ -530,29 +534,76 @@ const overlayBack = document.getElementById('overlay-back');
 
 const helperTexts = {
 	Finanzen: [
-		{ text: "", x: 0, y: 0, w: 0, h: 0 },
+		{ text: "Liquidität in Echtzeit: verfügbare Mittel und Entwicklung auf einen Blick",
+            x: 0.05, y: 0.11, w: 0.25, h: 0.24 },
+		{ text: "Operativer Überschuss zeigt, was nach laufenden Ein- und Auszahlungen wirklich übrig bleibt",
+            x: 0.27, y: 0.11, w: 0.47, h: 0.24 },
+		{ text: "Offene Posten: schnell erkennen, gezielt handeln",
+            x: 0.53, y: 0.11, w: 0.73, h: 0.24 },
+		{ text: "Investitionsvolumen und Wirkung – für klare Prioritäten und nachvollziehbare Kapitalbindung",
+            x: 0.75, y: 0.11, w: 0.95, h: 0.24 },
+		{ text: "Einnahmen im Zeitverlauf – inklusive Vergleich zu Plan/Vorjahr für schnelle Trend‑Erkennung",
+            x: 0.03, y: 0.25, w: 0.49, h: 0.57 },
+		{ text: "Kostenentwicklung transparent – erkenne Kostentreiber und Abweichungen auf einen Blick",
+            x: 0.52, y: 0.25, w: 0.98, h: 0.57 },
+		{ text: "Cash‑Flow‑Trend: sieh sofort, wie sich der operative Überschuss über die Zeit entwickelt",
+            x: 0.03, y: 0.61, w: 0.49, h: 0.91 },
+		{ text: "Ertragskraft im Fokus – EBITDA als zentrale Ergebniskennzahl zur Steuerung und Vergleichbarkeit",
+            x: 0.52, y: 0.61, w: 0.98, h: 0.91 },
 	],
 
 	Produkt: [
-		{ text: "Leistung auf einen Blick", x: 0.06, y: 0.09, w: 0.2, h: 0.26 },
-		{ text: "Zeigt Produktivität unabhängig von Herdengröße", x: 0.21, y: 0.09, w: 0.35, h: 0.26 },
-		{ text: "Ideal für schnelle Trend‑Checks im Alltag", x: 0.35, y: 0.09, w: 0.49, h: 0.26 },
-		{ text: "Kraftfutterkosten pro kg Milch – macht Fütterungseffizienz sofort vergleichbar", x: 0.50, y: 0.09, w: 0.64, h: 0.26 },
-		{ text: "Deckungsbeitrag je Kuh nach Futterkosten – zeigt, wie wirtschaftlich die Leistung wirklich ist", x: 0.65, y: 0.09, w: 0.79, h: 0.26 },
-		{ text: "Durchschnittliche Laktationsphase – liefert Kontext für Leistung, Gesundheit und Fütterungsniveau", x: 0.80, y: 0.09, w: 0.97, h: 0.26 },
-		{ text: "Tagesmenge im Verlauf – zeigt sofort Leistungstrends und Ausreißer Leistung je Kuh über die Zeit – perfekt für Management‑Vergleiche und ZielsteuerungLeistung je Kuh über die Zeit – perfekt für Management‑Vergleiche und Zielsteuerung Kraftfuttereinsatz je Kuh – macht Effizienz und Kostenwirkung sichtbar", x: 0.22, y: 0.34, w: 0.78, h: 0.84 },
+		{ text: "Leistung auf einen Blick",
+            x: 0.06, y: 0.09, w: 0.2, h: 0.26 },
+		{ text: "Zeigt Produktivität unabhängig von Herdengröße",
+            x: 0.21, y: 0.09, w: 0.35, h: 0.26 },
+		{ text: "Ideal für schnelle Trend‑Checks im Alltag",
+            x: 0.35, y: 0.09, w: 0.49, h: 0.26 },
+		{ text: "Kraftfutterkosten pro kg Milch – macht Fütterungseffizienz sofort vergleichbar",
+            x: 0.50, y: 0.09, w: 0.64, h: 0.26 },
+		{ text: "Deckungsbeitrag je Kuh nach Futterkosten – zeigt, wie wirtschaftlich die Leistung wirklich ist",
+            x: 0.65, y: 0.09, w: 0.79, h: 0.26 },
+		{ text: "Durchschnittliche Laktationsphase – liefert Kontext für Leistung, Gesundheit und Fütterungsniveau",
+            x: 0.80, y: 0.09, w: 0.97, h: 0.26 },
+		{ text: "Tagesmenge im Verlauf – zeigt sofort Leistungstrends und Ausreißer Leistung je Kuh über die Zeit – perfekt für Management‑Vergleiche und ZielsteuerungLeistung je Kuh über die Zeit – perfekt für Management‑Vergleiche und Zielsteuerung Kraftfuttereinsatz je Kuh – macht Effizienz und Kostenwirkung sichtbar",
+            x: 0.22, y: 0.34, w: 0.78, h: 0.84 },
 	],
 
 	"Interne Prozesse": [
-		{ text: "", x: 0, y: 0, w: 0, h: 0 },
+		{ text: "Übersicht der Kälberverluste in den ersten Lebenswochen – ein zentraler Indikator für Tiergesundheit und Managementqualität",
+            x: 0.01, y: 0.08, w: 0.18, h: 0.19 },
+		{ text: "Anzahl und Quote der Abgänge bei Milchkühen – hilft, Ursachen frühzeitig zu erkennen und gegenzusteuern",
+            x: 0.21, y: 0.08, w: 0.37, h: 0.19 },
+		{ text: "Anzahl positiver Trächtigkeitsuntersuchungen – zeigt den aktuellen Erfolg im Reproduktionsmanagement",
+            x: 0.41, y: 0.08, w: 0.57, h: 0.19 },
+		{ text: "Quote der besamten Kühe ohne bestätigte Trächtigkeit – wichtige Kennzahl zur Bewertung der Besamungsstrategie",
+            x: 0.61, y: 0.08, w: 0.78, h: 0.19 },
+		{ text: "Durchschnittliche Laktationstage bei Besamung – zeigt, wie früh oder spät Kühe wieder belegt werden",
+            x: 0.81, y: 0.08, w: 0.97, h: 0.19 },
+
+		{ text: "Entwicklung der Fruchtbarkeit über die Zeit – kombiniert Besamungen und Trächtigkeiten für eine ganzheitliche Bewertung",
+            x: 0.02, y: 0.22, w: 0.77, h: 0.56 },
+		{ text: "Überblick zur Kuhaktivität und Leistung – unterstützt die tägliche Kontrolle von Bestand und Produktivität",
+            x: 0.79, y: 0.22, w: 0.97, h: 0.38 },
+		{ text: "Monitoring von Trächtigkeiten und Reproduktionskennzahlen – für planbare Abläufe und stabile Herdenentwicklung",
+            x: 0.79, y: 0.40, w: 0.97, h: 0.56 },
+		{ text: "Monatliche Darstellung von Kälberverlusten inklusive Quote – macht kritische Phasen sofort sichtbar",
+            x: 0.1, y: 0.59, w: 0.49, h: 0.93 },
+        { text: "Abgänge bei Milchkühen mit absoluter Zahl und Prozentwert – für klare Ursachenanalyse und Benchmarking",
+            x: 0.51, y: 0.59, w: 0.98, h: 0.93 },
 	],
 
 	Ressourcen: [
-		{ text: "", x: 0, y: 0, w: 0, h: 0 },
+		{ text: "Aufschlüsselung der Emissionen nach Hauptquellen – für gezielte Maßnahmen statt pauschaler Ansätze",
+            x: 0.12, y: 0.13, w: 0.39, h: 0.55 },
+        { text: "Gesamte Treibhausgas‑Emissionen des Betriebs – die zentrale Kennzahl für Klimabilanz und Nachhaltigkeit",
+            x: 0.02, y: 0.59, w: 0.20, h: 0.72 },
+        { text: "CO₂‑Fußabdruck je Kilogramm Milch – zeigt die Emissionseffizienz der Produktion",
+            x: 0.02, y: 0.79, w: 0.20, h: 0.90 },
+        { text: "Langfristige Entwicklung der Treibhausgas‑Emissionen – macht Fortschritte und Wirkung von Maßnahmen sichtbar",
+            x: 0.24, y: 0.59, w: 0.78, h: 0.93 },
 	]
-
 };
-
 
 function setupOverlayHelper(label) {
 	const helperEl = document.getElementById("overlay-helper");
@@ -586,9 +637,9 @@ function setupOverlayHelper(label) {
 			helperEl.style.opacity = "1";
 			visible = true;
 		} else {
-			helperEl.innerText = `${px.toFixed(4)}, ${py.toFixed(4)}`;
-			// helperEl.style.opacity = "0";
-			// visible = false;
+			// helperEl.innerText = `${px.toFixed(2)}, ${py.toFixed(2)}`;
+			helperEl.style.opacity = "0";
+			visible = false;
 		}
 
 		const x = e.clientX - rect.left;
@@ -602,22 +653,24 @@ function setupOverlayHelper(label) {
 }
 
 overlayBack.addEventListener('click', () => {
-	overlayEl.classList.remove('x-int');
-	overlayEl.classList.add('x-out');
-
 	const params = { t: pyramidLeft, back: pyramidBack };
 	new TWEEN.Tween(params).to({ t: 0, back: 0 }).onUpdate(() => {
 		pyramidGroup.position.x = params.t;
 		pyramidGroup.position.z = params.back;
+
+		overlayEl.style.transform = `translate(calc(-${(params.t/pyramidLeft)*100}% + 50%), -50%)`;
+
 	}).start().onComplete(() => {
 		offToSide = false;
+	}).onStart(() => {
+		overlayEl.style.opacity = 0;
 	});
 });
 
 function showOverlay(label) {
-	overlayEl.classList.remove('x-out');
-	overlayEl.classList.add('x-in');
-	overlayEl.children[0].src = label.overlayImageSrc;
+	// overlayEl.classList.remove('x-out');
+	// overlayEl.classList.add('x-in');
+	overlayEl.children[0].src = `/images/${label.overlayImageSrc}`;
 	setupOverlayHelper(label);
 }
 
