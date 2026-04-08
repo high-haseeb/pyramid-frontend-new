@@ -1,13 +1,13 @@
 import * as THREE from "three";
 
 import TWEEN from "three/examples/jsm/libs/tween.module.js";
-import { Sky } from "three/examples/jsm/objects/Sky.js";
+// import { Sky } from "three/examples/jsm/objects/Sky.js";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 const BASE = import.meta.env.BASE_URL;
 
 let camera, renderer;
 let scene;
-let sky, sun;
+// let sky, sun;
 let skyMat;
 let plane;
 let textureAspect = 1;
@@ -57,75 +57,75 @@ const labels = [
 	}
 ];
 
-function initSky() {
-
-	sky = new Sky();
-	sky.scale.setScalar(450000);
-	scene.add(sky);
-
-	skyMat = sky.material;
-	sun = new THREE.Vector3();
-
-	/// GUI
-	const effectController = {
-		turbidity: 4.4,
-		rayleigh: 0.337,
-		mieCoefficient: 0.045,
-		mieDirectionalG: 0.79,
-		elevation: 60,
-		azimuth: 45,
-		exposure: renderer.toneMappingExposure,
-		cloudCoverage: 0.3,
-		cloudDensity: 0.7,
-		cloudElevation: 0.35,
-		cloudScale: 0.0006,
-		cloudSpeed: 0.0002,
-	};
-
-	function guiChanged() {
-
-		const uniforms = sky.material.uniforms;
-		uniforms['turbidity'].value = effectController.turbidity;
-		uniforms['rayleigh'].value = effectController.rayleigh;
-		uniforms['mieCoefficient'].value = effectController.mieCoefficient;
-		uniforms['mieDirectionalG'].value = effectController.mieDirectionalG;
-
-		uniforms['cloudCoverage'].value = effectController.cloudCoverage;
-		uniforms['cloudDensity'].value = effectController.cloudDensity;
-		uniforms['cloudElevation'].value = effectController.cloudElevation;
-		uniforms['cloudScale'].value = effectController.cloudScale;
-		uniforms['cloudSpeed'].value = effectController.cloudSpeed;
-
-		const phi = THREE.MathUtils.degToRad( 90 - effectController.elevation );
-		const theta = THREE.MathUtils.degToRad( effectController.azimuth );
-
-		sun.setFromSphericalCoords( 1, phi, theta );
-
-		uniforms[ 'sunPosition' ].value.copy( sun );
-
-		renderer.toneMappingExposure = effectController.exposure;
-
-	}
-
-	// gui = new GUI();
-	//
-	// gui.add(effectController, 'turbidity', 0.0, 20.0, 0.1).onChange(guiChanged);
-	// gui.add(effectController, 'rayleigh', 0.0, 4, 0.001).onChange(guiChanged);
-	// gui.add(effectController, 'mieCoefficient', 0.0, 0.1, 0.001).onChange(guiChanged);
-	// gui.add(effectController, 'mieDirectionalG', 0.0, 1, 0.001).onChange(guiChanged);
-	// gui.add(effectController, 'elevation', 0, 90, 0.1).onChange(guiChanged);
-	// gui.add(effectController, 'azimuth', -180, 180, 0.1).onChange(guiChanged);
-	// gui.add(effectController, 'exposure', 0, 1, 0.0001).onChange(guiChanged);
-	//
-	// const folderClouds = gui.addFolder('Clouds');
-	// folderClouds.add(effectController, 'cloudCoverage', 0, 1, 0.01).name('coverage').onChange(guiChanged);
-	// folderClouds.add(effectController, 'cloudDensity', 0, 1, 0.01).name('density').onChange(guiChanged);
-	// folderClouds.add(effectController, 'cloudElevation', 0, 1, 0.01).name('elevation').onChange(guiChanged);
-	// folderClouds.add(effectController, 'cloudScale', 0, 0.0008, 0.0002).name('scale').onChange(guiChanged);
-	// folderClouds.add(effectController, 'cloudSpeed', 0, 0.0008, 0.0001).name('speed').onChange(guiChanged);
-
-	guiChanged();
-}
+// function initSky() {
+//
+// 	sky = new Sky();
+// 	sky.scale.setScalar(450000);
+// 	scene.add(sky);
+//
+// 	skyMat = sky.material;
+// 	sun = new THREE.Vector3();
+//
+// 	/// GUI
+// 	const effectController = {
+// 		turbidity: 4.4,
+// 		rayleigh: 0.337,
+// 		mieCoefficient: 0.045,
+// 		mieDirectionalG: 0.79,
+// 		elevation: 60,
+// 		azimuth: 45,
+// 		exposure: renderer.toneMappingExposure,
+// 		cloudCoverage: 0.3,
+// 		cloudDensity: 0.7,
+// 		cloudElevation: 0.35,
+// 		cloudScale: 0.0006,
+// 		cloudSpeed: 0.0002,
+// 	};
+//
+// 	function guiChanged() {
+//
+// 		const uniforms = sky.material.uniforms;
+// 		uniforms['turbidity'].value = effectController.turbidity;
+// 		uniforms['rayleigh'].value = effectController.rayleigh;
+// 		uniforms['mieCoefficient'].value = effectController.mieCoefficient;
+// 		uniforms['mieDirectionalG'].value = effectController.mieDirectionalG;
+//
+// 		uniforms['cloudCoverage'].value = effectController.cloudCoverage;
+// 		uniforms['cloudDensity'].value = effectController.cloudDensity;
+// 		uniforms['cloudElevation'].value = effectController.cloudElevation;
+// 		uniforms['cloudScale'].value = effectController.cloudScale;
+// 		uniforms['cloudSpeed'].value = effectController.cloudSpeed;
+//
+// 		const phi = THREE.MathUtils.degToRad( 90 - effectController.elevation );
+// 		const theta = THREE.MathUtils.degToRad( effectController.azimuth );
+//
+// 		sun.setFromSphericalCoords( 1, phi, theta );
+//
+// 		uniforms[ 'sunPosition' ].value.copy( sun );
+//
+// 		renderer.toneMappingExposure = effectController.exposure;
+//
+// 	}
+//
+// 	// gui = new GUI();
+// 	//
+// 	// gui.add(effectController, 'turbidity', 0.0, 20.0, 0.1).onChange(guiChanged);
+// 	// gui.add(effectController, 'rayleigh', 0.0, 4, 0.001).onChange(guiChanged);
+// 	// gui.add(effectController, 'mieCoefficient', 0.0, 0.1, 0.001).onChange(guiChanged);
+// 	// gui.add(effectController, 'mieDirectionalG', 0.0, 1, 0.001).onChange(guiChanged);
+// 	// gui.add(effectController, 'elevation', 0, 90, 0.1).onChange(guiChanged);
+// 	// gui.add(effectController, 'azimuth', -180, 180, 0.1).onChange(guiChanged);
+// 	// gui.add(effectController, 'exposure', 0, 1, 0.0001).onChange(guiChanged);
+// 	//
+// 	// const folderClouds = gui.addFolder('Clouds');
+// 	// folderClouds.add(effectController, 'cloudCoverage', 0, 1, 0.01).name('coverage').onChange(guiChanged);
+// 	// folderClouds.add(effectController, 'cloudDensity', 0, 1, 0.01).name('density').onChange(guiChanged);
+// 	// folderClouds.add(effectController, 'cloudElevation', 0, 1, 0.01).name('elevation').onChange(guiChanged);
+// 	// folderClouds.add(effectController, 'cloudScale', 0, 0.0008, 0.0002).name('scale').onChange(guiChanged);
+// 	// folderClouds.add(effectController, 'cloudSpeed', 0, 0.0008, 0.0001).name('speed').onChange(guiChanged);
+//
+// 	guiChanged();
+// }
 
 function hideLabels() {
 	for (const label of labels) {
@@ -464,6 +464,7 @@ async function init() {
 	camera.updateProjectionMatrix();
 
 	scene = new THREE.Scene();
+    scene.background = new THREE.Color("skyblue");
 
 	const canvas = document.getElementById("content");
 	renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
@@ -472,7 +473,7 @@ async function init() {
 	renderer.setAnimationLoop(animate);
 	//renderer.toneMappingExposure = 0.4;
 
-	initSky();
+	// initSky();
 
 	scene.add(new THREE.AmbientLight('white', 10));
 
@@ -765,7 +766,7 @@ function animate() {
 		// 	plane.rotation.x = THREE.MathUtils.lerp(0, THREE.MathUtils.degToRad(2), mouse.y);
 		// }
 
-	skyMat.uniforms['time'].value = performance.now() * 0.001;
+	// skyMat.uniforms['time'].value = performance.now() * 0.001;
 
 	updateSections(delta);
 	renderer.render(scene, camera);
