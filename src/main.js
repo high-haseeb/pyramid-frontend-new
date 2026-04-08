@@ -1,21 +1,8 @@
 import * as THREE from "three";
 
-//import { GUI } from "three/examples/jsm/libs/lil-gui.module.min.js";
 import TWEEN from "three/examples/jsm/libs/tween.module.js";
-
 import { Sky } from "three/examples/jsm/objects/Sky.js";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
-//import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper.js";
-//import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-
-// import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
-// import { RenderPass }  from "three/examples/jsm/postprocessing/RenderPass.js";
-// import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
-// import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
-// import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
-//import { RenderTransitionPass } from "three/examples/jsm/postprocessing/RenderTransitionPass.js";
-// import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js"
-
 const BASE = import.meta.env.BASE_URL;
 
 let camera, renderer;
@@ -30,10 +17,6 @@ let activeSection = -1; // 0..3
 const sections = [];
 const icons = [];
 const proxies = [];
-
-const BLOOM_SCENE = 1;
-const bloomLayer = new THREE.Layers();
-bloomLayer.set( BLOOM_SCENE );
 
 const timer = new THREE.Timer();
 const mouse = new THREE.Vector2();
@@ -345,7 +328,6 @@ async function setupPyramid() {
 		const mat = pyramidMaterial(i);
 		const section = new THREE.Mesh(geo, mat);
 		section.position.y = pyramidHeight - sectionHeight * i;
-		section.layers.enable(BLOOM_SCENE);
 
 		const size = radiusBottom * Math.SQRT2;
 		const bottomGeo = new THREE.PlaneGeometry(size, size);
@@ -412,7 +394,6 @@ async function setupPyramid() {
 
 		const icon = await getIcon(iconPaths[i]);
 		icons.push(icon);
-		icon.layers.enable(BLOOM_SCENE);
 
 		icon.position.y =  (pyramidHeight - sectionHeight * i) - pyramidHeight/2 - 0.3;
 		pyramidGroup.add(icon);
