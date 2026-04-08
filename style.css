@@ -31,7 +31,7 @@ html, body {
 
 #fmis {
 	position: absolute;
-	top: 1rem; left: 1rem;
+	top: 2rem; left: 1rem;
 	z-index: 10;
 	font-family: "SF Pro Display";
 	line-height: 1;
