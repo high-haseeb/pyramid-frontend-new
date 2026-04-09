@@ -1,14 +1,13 @@
 import * as THREE from "three";
 
 import TWEEN from "three/examples/jsm/libs/tween.module.js";
-// import { Sky } from "three/examples/jsm/objects/Sky.js";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 const BASE = import.meta.env.BASE_URL;
+import { CloudSystem } from "./Clouds.js";
 
 let camera, renderer;
 let scene;
-// let sky, sun;
-let skyMat;
+let clouds;
 let plane;
 let textureAspect = 1;
 let raycaster;
@@ -56,76 +55,6 @@ const labels = [
 		overlayImageSrc: "resource.png"
 	}
 ];
-
-// function initSky() {
-//
-// 	sky = new Sky();
-// 	sky.scale.setScalar(450000);
-// 	scene.add(sky);
-//
-// 	skyMat = sky.material;
-// 	sun = new THREE.Vector3();
-//
-// 	/// GUI
-// 	const effectController = {
-// 		turbidity: 4.4,
-// 		rayleigh: 0.337,
-// 		mieCoefficient: 0.045,
-// 		mieDirectionalG: 0.79,
-// 		elevation: 60,
-// 		azimuth: 45,
-// 		exposure: renderer.toneMappingExposure,
-// 		cloudCoverage: 0.3,
-// 		cloudDensity: 0.7,
-// 		cloudElevation: 0.35,
-// 		cloudScale: 0.0006,
-// 		cloudSpeed: 0.0002,
-// 	};
-//
-// 	function guiChanged() {
-//
-// 		const uniforms = sky.material.uniforms;
-// 		uniforms['turbidity'].value = effectController.turbidity;
-// 		uniforms['rayleigh'].value = effectController.rayleigh;
-// 		uniforms['mieCoefficient'].value = effectController.mieCoefficient;
-// 		uniforms['mieDirectionalG'].value = effectController.mieDirectionalG;
-//
-// 		uniforms['cloudCoverage'].value = effectController.cloudCoverage;
-// 		uniforms['cloudDensity'].value = effectController.cloudDensity;
-// 		uniforms['cloudElevation'].value = effectController.cloudElevation;
-// 		uniforms['cloudScale'].value = effectController.cloudScale;
-// 		uniforms['cloudSpeed'].value = effectController.cloudSpeed;
-//
-// 		const phi = THREE.MathUtils.degToRad( 90 - effectController.elevation );
-// 		const theta = THREE.MathUtils.degToRad( effectController.azimuth );
-//
-// 		sun.setFromSphericalCoords( 1, phi, theta );
-//
-// 		uniforms[ 'sunPosition' ].value.copy( sun );
-//
-// 		renderer.toneMappingExposure = effectController.exposure;
-//
-// 	}
-//
-// 	// gui = new GUI();
-// 	//
-// 	// gui.add(effectController, 'turbidity', 0.0, 20.0, 0.1).onChange(guiChanged);
-// 	// gui.add(effectController, 'rayleigh', 0.0, 4, 0.001).onChange(guiChanged);
-// 	// gui.add(effectController, 'mieCoefficient', 0.0, 0.1, 0.001).onChange(guiChanged);
-// 	// gui.add(effectController, 'mieDirectionalG', 0.0, 1, 0.001).onChange(guiChanged);
-// 	// gui.add(effectController, 'elevation', 0, 90, 0.1).onChange(guiChanged);
-// 	// gui.add(effectController, 'azimuth', -180, 180, 0.1).onChange(guiChanged);
-// 	// gui.add(effectController, 'exposure', 0, 1, 0.0001).onChange(guiChanged);
-// 	//
-// 	// const folderClouds = gui.addFolder('Clouds');
-// 	// folderClouds.add(effectController, 'cloudCoverage', 0, 1, 0.01).name('coverage').onChange(guiChanged);
-// 	// folderClouds.add(effectController, 'cloudDensity', 0, 1, 0.01).name('density').onChange(guiChanged);
-// 	// folderClouds.add(effectController, 'cloudElevation', 0, 1, 0.01).name('elevation').onChange(guiChanged);
-// 	// folderClouds.add(effectController, 'cloudScale', 0, 0.0008, 0.0002).name('scale').onChange(guiChanged);
-// 	// folderClouds.add(effectController, 'cloudSpeed', 0, 0.0008, 0.0001).name('speed').onChange(guiChanged);
-//
-// 	guiChanged();
-// }
 
 function hideLabels() {
 	for (const label of labels) {
@@ -177,33 +106,6 @@ function setupLabels() {
 			document.body.appendChild(labelEl);
 
 			label.hoverEl = labelEl;
-		}
-
-		// bottom labels
-		{
-			// const labelEl = document.createElement('div');
-			// const nameEl = document.createElement('div');
-			// const descEl =  document.createElement('div');
-			//
-			// nameEl.innerText = label.name;
-			// descEl.innerText = label.desc;
-			//
-			// descEl.classList.add('bottom-label-desc');
-			// nameEl.classList.add('bottom-label-name');
-			// labelEl.classList.add('bottom-label');
-			//
-			// labelEl.style.zIndex = '100';
-			// labelEl.style.position = 'absolute';
-			// labelEl.style.bottom = '1rem';
-			// labelEl.style.left = '1rem';
-			//
-			// labelEl.style.opacity = '0.5';
-			//
-			// labelEl.appendChild(nameEl);
-			// labelEl.appendChild(descEl);
-			// document.body.appendChild(labelEl);
-			//
-			// label.btmEl = labelEl;
 		}
 	}
 }
@@ -302,9 +204,9 @@ async function setupPyramid() {
 
 		const vertices = new Float32Array([
 			-half, 0, -half, // 0
-			half, 0, -half, // 1
-			half, 0,  half, // 2
-			-half, 0,  half  // 3
+			half,  0, -half, // 1
+			half,  0, half,  // 2
+			-half, 0, half,  // 3
 		]);
 
 		const indices = [
@@ -473,20 +375,37 @@ async function init() {
 	renderer.setAnimationLoop(animate);
 	//renderer.toneMappingExposure = 0.4;
 
-	// initSky();
-
 	scene.add(new THREE.AmbientLight('white', 10));
 
-	grassPlane();
-	lighting();
+    { // Clouds
+        const cloudTexture = new THREE.TextureLoader().load(`${BASE}/cloud.png`);
+        clouds = new CloudSystem({ texture: cloudTexture });
 
-	raycaster = new THREE.Raycaster();
+        clouds.addCloud({
+            segments: 15,
+            bounds:   [6, 1, 4],
+            volume:   1.5,
+            color:    "white",
+            opacity:  0.85,
+            speed:    0.1,
+            fade:     80,
+            growth:   2.5,
+        });
 
-	setupPyramid();
+        scene.add(clouds.mesh);
+    }
 
-	window.addEventListener('resize', onWindowResize);
-	window.addEventListener('mousemove', onMouseMove);
-	window.addEventListener('click', onMouseClick);
+
+    grassPlane();
+    lighting();
+
+    raycaster = new THREE.Raycaster();
+
+    setupPyramid();
+
+    window.addEventListener('resize', onWindowResize);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('click', onMouseClick);
 }
 
 const pyramidLeft = -4;
@@ -494,91 +413,91 @@ const pyramidBack = -3;
 let offToSide = false;
 
 function onMouseClick() {
-	const label = labels[activeSection];
-	if ((activeSection < 0) || (!label))  return;
+    const label = labels[activeSection];
+    if ((activeSection < 0) || (!label))  return;
 
-	showOverlay(labels[activeSection]);
+    showOverlay(labels[activeSection]);
 
-	const params = { t: 0, back: 0 };
-	new TWEEN.Tween(params).to({ t: pyramidLeft, back: pyramidBack }).onUpdate(() => {
-		pyramidGroup.position.x = params.t;
-		pyramidGroup.position.z = params.back;
+    const params = { t: 0, back: 0 };
+    new TWEEN.Tween(params).to({ t: pyramidLeft, back: pyramidBack }).onUpdate(() => {
+        pyramidGroup.position.x = params.t;
+        pyramidGroup.position.z = params.back;
 
-		overlayEl.style.transform = `translate(calc(${-(params.t/pyramidLeft)*100}% + 50%), -50%)`;
+        overlayEl.style.transform = `translate(calc(${-(params.t/pyramidLeft)*100}% + 50%), -50%)`;
 
-	}).start().onComplete(() => {
-		offToSide = true;
-	}).onStart(() => {
-		overlayEl.style.opacity = 1;
-	});
+    }).start().onComplete(() => {
+        offToSide = true;
+    }).onStart(() => {
+        overlayEl.style.opacity = 1;
+    });
 }
 
 const overlayEl = document.getElementById('overlay');
 const overlayBack = document.getElementById('overlay-back');
 
 const helperTexts = {
-	Finanzen: [
-		{ text: "Liquidität in Echtzeit: verfügbare Mittel und Entwicklung auf einen Blick",
+    Finanzen: [
+        { text: "Liquidität in Echtzeit: verfügbare Mittel und Entwicklung auf einen Blick",
             x: 0.05, y: 0.11, w: 0.25, h: 0.24 },
-		{ text: "Operativer Überschuss zeigt, was nach laufenden Ein- und Auszahlungen wirklich übrig bleibt",
+        { text: "Operativer Überschuss zeigt, was nach laufenden Ein- und Auszahlungen wirklich übrig bleibt",
             x: 0.27, y: 0.11, w: 0.47, h: 0.24 },
-		{ text: "Offene Posten: schnell erkennen, gezielt handeln",
+        { text: "Offene Posten: schnell erkennen, gezielt handeln",
             x: 0.53, y: 0.11, w: 0.73, h: 0.24 },
-		{ text: "Investitionsvolumen und Wirkung – für klare Prioritäten und nachvollziehbare Kapitalbindung",
+        { text: "Investitionsvolumen und Wirkung – für klare Prioritäten und nachvollziehbare Kapitalbindung",
             x: 0.75, y: 0.11, w: 0.95, h: 0.24 },
-		{ text: "Einnahmen im Zeitverlauf – inklusive Vergleich zu Plan/Vorjahr für schnelle Trend‑Erkennung",
+        { text: "Einnahmen im Zeitverlauf – inklusive Vergleich zu Plan/Vorjahr für schnelle Trend‑Erkennung",
             x: 0.03, y: 0.25, w: 0.49, h: 0.57 },
-		{ text: "Kostenentwicklung transparent – erkenne Kostentreiber und Abweichungen auf einen Blick",
+        { text: "Kostenentwicklung transparent – erkenne Kostentreiber und Abweichungen auf einen Blick",
             x: 0.52, y: 0.25, w: 0.98, h: 0.57 },
-		{ text: "Cash‑Flow‑Trend: sieh sofort, wie sich der operative Überschuss über die Zeit entwickelt",
+        { text: "Cash‑Flow‑Trend: sieh sofort, wie sich der operative Überschuss über die Zeit entwickelt",
             x: 0.03, y: 0.61, w: 0.49, h: 0.91 },
-		{ text: "Ertragskraft im Fokus – EBITDA als zentrale Ergebniskennzahl zur Steuerung und Vergleichbarkeit",
+        { text: "Ertragskraft im Fokus – EBITDA als zentrale Ergebniskennzahl zur Steuerung und Vergleichbarkeit",
             x: 0.52, y: 0.61, w: 0.98, h: 0.91 },
-	],
+    ],
 
-	Produkt: [
-		{ text: "Leistung auf einen Blick",
+    Produkt: [
+        { text: "Leistung auf einen Blick",
             x: 0.06, y: 0.09, w: 0.2, h: 0.26 },
-		{ text: "Zeigt Produktivität unabhängig von Herdengröße",
+        { text: "Zeigt Produktivität unabhängig von Herdengröße",
             x: 0.21, y: 0.09, w: 0.35, h: 0.26 },
-		{ text: "Ideal für schnelle Trend‑Checks im Alltag",
+        { text: "Ideal für schnelle Trend‑Checks im Alltag",
             x: 0.35, y: 0.09, w: 0.49, h: 0.26 },
-		{ text: "Kraftfutterkosten pro kg Milch – macht Fütterungseffizienz sofort vergleichbar",
+        { text: "Kraftfutterkosten pro kg Milch – macht Fütterungseffizienz sofort vergleichbar",
             x: 0.50, y: 0.09, w: 0.64, h: 0.26 },
-		{ text: "Deckungsbeitrag je Kuh nach Futterkosten – zeigt, wie wirtschaftlich die Leistung wirklich ist",
+        { text: "Deckungsbeitrag je Kuh nach Futterkosten – zeigt, wie wirtschaftlich die Leistung wirklich ist",
             x: 0.65, y: 0.09, w: 0.79, h: 0.26 },
-		{ text: "Durchschnittliche Laktationsphase – liefert Kontext für Leistung, Gesundheit und Fütterungsniveau",
+        { text: "Durchschnittliche Laktationsphase – liefert Kontext für Leistung, Gesundheit und Fütterungsniveau",
             x: 0.80, y: 0.09, w: 0.97, h: 0.26 },
-		{ text: "Tagesmenge im Verlauf – zeigt sofort Leistungstrends und Ausreißer Leistung je Kuh über die Zeit – perfekt für Management‑Vergleiche und ZielsteuerungLeistung je Kuh über die Zeit – perfekt für Management‑Vergleiche und Zielsteuerung Kraftfuttereinsatz je Kuh – macht Effizienz und Kostenwirkung sichtbar",
+        { text: "Tagesmenge im Verlauf – zeigt sofort Leistungstrends und Ausreißer Leistung je Kuh über die Zeit – perfekt für Management‑Vergleiche und ZielsteuerungLeistung je Kuh über die Zeit – perfekt für Management‑Vergleiche und Zielsteuerung Kraftfuttereinsatz je Kuh – macht Effizienz und Kostenwirkung sichtbar",
             x: 0.22, y: 0.34, w: 0.78, h: 0.84 },
-	],
+    ],
 
-	"Interne Prozesse": [
-		{ text: "Übersicht der Kälberverluste in den ersten Lebenswochen – ein zentraler Indikator für Tiergesundheit und Managementqualität",
+    "Interne Prozesse": [
+        { text: "Übersicht der Kälberverluste in den ersten Lebenswochen – ein zentraler Indikator für Tiergesundheit und Managementqualität",
             x: 0.01, y: 0.08, w: 0.18, h: 0.19 },
-		{ text: "Anzahl und Quote der Abgänge bei Milchkühen – hilft, Ursachen frühzeitig zu erkennen und gegenzusteuern",
+        { text: "Anzahl und Quote der Abgänge bei Milchkühen – hilft, Ursachen frühzeitig zu erkennen und gegenzusteuern",
             x: 0.21, y: 0.08, w: 0.37, h: 0.19 },
-		{ text: "Anzahl positiver Trächtigkeitsuntersuchungen – zeigt den aktuellen Erfolg im Reproduktionsmanagement",
+        { text: "Anzahl positiver Trächtigkeitsuntersuchungen – zeigt den aktuellen Erfolg im Reproduktionsmanagement",
             x: 0.41, y: 0.08, w: 0.57, h: 0.19 },
-		{ text: "Quote der besamten Kühe ohne bestätigte Trächtigkeit – wichtige Kennzahl zur Bewertung der Besamungsstrategie",
+        { text: "Quote der besamten Kühe ohne bestätigte Trächtigkeit – wichtige Kennzahl zur Bewertung der Besamungsstrategie",
             x: 0.61, y: 0.08, w: 0.78, h: 0.19 },
-		{ text: "Durchschnittliche Laktationstage bei Besamung – zeigt, wie früh oder spät Kühe wieder belegt werden",
+        { text: "Durchschnittliche Laktationstage bei Besamung – zeigt, wie früh oder spät Kühe wieder belegt werden",
             x: 0.81, y: 0.08, w: 0.97, h: 0.19 },
 
-		{ text: "Entwicklung der Fruchtbarkeit über die Zeit – kombiniert Besamungen und Trächtigkeiten für eine ganzheitliche Bewertung",
+        { text: "Entwicklung der Fruchtbarkeit über die Zeit – kombiniert Besamungen und Trächtigkeiten für eine ganzheitliche Bewertung",
             x: 0.02, y: 0.22, w: 0.77, h: 0.56 },
-		{ text: "Überblick zur Kuhaktivität und Leistung – unterstützt die tägliche Kontrolle von Bestand und Produktivität",
+        { text: "Überblick zur Kuhaktivität und Leistung – unterstützt die tägliche Kontrolle von Bestand und Produktivität",
             x: 0.79, y: 0.22, w: 0.97, h: 0.38 },
-		{ text: "Monitoring von Trächtigkeiten und Reproduktionskennzahlen – für planbare Abläufe und stabile Herdenentwicklung",
+        { text: "Monitoring von Trächtigkeiten und Reproduktionskennzahlen – für planbare Abläufe und stabile Herdenentwicklung",
             x: 0.79, y: 0.40, w: 0.97, h: 0.56 },
-		{ text: "Monatliche Darstellung von Kälberverlusten inklusive Quote – macht kritische Phasen sofort sichtbar",
+        { text: "Monatliche Darstellung von Kälberverlusten inklusive Quote – macht kritische Phasen sofort sichtbar",
             x: 0.1, y: 0.59, w: 0.49, h: 0.93 },
         { text: "Abgänge bei Milchkühen mit absoluter Zahl und Prozentwert – für klare Ursachenanalyse und Benchmarking",
             x: 0.51, y: 0.59, w: 0.98, h: 0.93 },
-	],
+    ],
 
-	Ressourcen: [
-		{ text: "Aufschlüsselung der Emissionen nach Hauptquellen – für gezielte Maßnahmen statt pauschaler Ansätze",
+    Ressourcen: [
+        { text: "Aufschlüsselung der Emissionen nach Hauptquellen – für gezielte Maßnahmen statt pauschaler Ansätze",
             x: 0.12, y: 0.13, w: 0.39, h: 0.55 },
         { text: "Gesamte Treibhausgas‑Emissionen des Betriebs – die zentrale Kennzahl für Klimabilanz und Nachhaltigkeit",
             x: 0.02, y: 0.59, w: 0.20, h: 0.72 },
@@ -586,190 +505,183 @@ const helperTexts = {
             x: 0.02, y: 0.79, w: 0.20, h: 0.90 },
         { text: "Langfristige Entwicklung der Treibhausgas‑Emissionen – macht Fortschritte und Wirkung von Maßnahmen sichtbar",
             x: 0.24, y: 0.59, w: 0.78, h: 0.93 },
-	]
+    ]
 };
 
 function setupOverlayHelper(label) {
-	const helperEl = document.getElementById("overlay-helper");
+    const helperEl = document.getElementById("overlay-helper");
 
-	let visible = false;
-	const helperText = helperTexts[label.name];
-	const overlayElImg = overlayEl.children[0];
+    let visible = false;
+    const helperText = helperTexts[label.name];
+    const overlayElImg = overlayEl.children[0];
 
-	overlayElImg.addEventListener('mousemove', (e) => {
-		const rect = overlayElImg.getBoundingClientRect();
+    overlayElImg.addEventListener('mousemove', (e) => {
+        const rect = overlayElImg.getBoundingClientRect();
 
-		const px = (e.clientX - rect.left) / rect.width;
-		const py = (e.clientY - rect.top) / rect.height;
+        const px = (e.clientX - rect.left) / rect.width;
+        const py = (e.clientY - rect.top) / rect.height;
 
-		let activeText = "";
+        let activeText = "";
 
-		for (const zone of helperText) {
-			if (
-				px >= zone.x &&
-				px <= zone.w &&
-				py >= zone.y &&
-				py <= zone.h
-			) {
-				activeText = zone.text;
-				break;
-			}
-		}
+        for (const zone of helperText) {
+            if (
+                px >= zone.x &&
+                px <= zone.w &&
+                py >= zone.y &&
+                py <= zone.h
+            ) {
+                activeText = zone.text;
+                break;
+            }
+        }
 
-		if (activeText) {
-			helperEl.innerText = activeText;
-			helperEl.style.opacity = "1";
-			visible = true;
-		} else {
-			// helperEl.innerText = `${px.toFixed(2)}, ${py.toFixed(2)}`;
-			helperEl.style.opacity = "0";
-			visible = false;
-		}
+        if (activeText) {
+            helperEl.innerText = activeText;
+            helperEl.style.opacity = "1";
+            visible = true;
+        } else {
+            // helperEl.innerText = `${px.toFixed(2)}, ${py.toFixed(2)}`;
+            helperEl.style.opacity = "0";
+            visible = false;
+        }
 
-		const x = e.clientX - rect.left;
-		const y = e.clientY - rect.top;
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-		const scale = visible ? 1 : 0.95;
+        const scale = visible ? 1 : 0.95;
 
-		const helperRect = helperEl.getBoundingClientRect();
-		helperEl.style.transform = `translate(${x - helperRect.width}px, ${y - helperRect.height}px) scale(${scale})`;  
-	});
+        const helperRect = helperEl.getBoundingClientRect();
+        helperEl.style.transform = `translate(${x - helperRect.width}px, ${y - helperRect.height}px) scale(${scale})`;  
+    });
 }
 
 overlayBack.addEventListener('click', () => {
-	const params = { t: pyramidLeft, back: pyramidBack };
-	new TWEEN.Tween(params).to({ t: 0, back: 0 }).onUpdate(() => {
-		pyramidGroup.position.x = params.t;
-		pyramidGroup.position.z = params.back;
+    const params = { t: pyramidLeft, back: pyramidBack };
+    new TWEEN.Tween(params).to({ t: 0, back: 0 }).onUpdate(() => {
+        pyramidGroup.position.x = params.t;
+        pyramidGroup.position.z = params.back;
 
-		overlayEl.style.transform = `translate(calc(-${(params.t/pyramidLeft)*100}% + 50%), -50%)`;
+        overlayEl.style.transform = `translate(calc(-${(params.t/pyramidLeft)*100}% + 50%), -50%)`;
 
-	}).start().onComplete(() => {
-		offToSide = false;
-	}).onStart(() => {
-		overlayEl.style.opacity = 0;
-	});
+    }).start().onComplete(() => {
+        offToSide = false;
+    }).onStart(() => {
+        overlayEl.style.opacity = 0;
+    });
 });
 
 function showOverlay(label) {
-	// overlayEl.classList.remove('x-out');
-	// overlayEl.classList.add('x-in');
+    // overlayEl.classList.remove('x-out');
+    // overlayEl.classList.add('x-in');
     overlayEl.children[0].src = `${BASE}images/${label.overlayImageSrc}`;
-	setupOverlayHelper(label);
+    setupOverlayHelper(label);
 }
 
 function onMouseMove(e) {
-	mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-	mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 }
 
 function raycasterUpdate() {
 
-	if (offToSide) return;
+    if (offToSide) return;
 
-	raycaster.setFromCamera(mouse, camera);
-	const hit = raycaster.intersectObjects(proxies, false);
+    raycaster.setFromCamera(mouse, camera);
+    const hit = raycaster.intersectObjects(proxies, false);
 
-	if (hit.length <= 0) {
-		activeSection = -1;
-		sections.forEach((s, i) => { 
-			s.userData.targetT = 0;
+    if (hit.length <= 0) {
+        activeSection = -1;
+        sections.forEach((s, i) => { 
+            s.userData.targetT = 0;
 
-			// reset icons
-			if (icons && icons[i]) {
-				const icon = icons[i];
-				icon.material.color.set('white');
-				icon.scale.setScalar(0.3);
-			}
+            // reset icons
+            if (icons && icons[i]) {
+                const icon = icons[i];
+                icon.material.color.set('white');
+                icon.scale.setScalar(0.3);
+            }
 
-		});
-		hideLabels();
+        });
+        hideLabels();
 
-		for (const section of sections) {
-			section.material.uniforms.uIsHover.value = false;
-			section.material.depthWrite = false;
-		}
-		return;
-	}
+        for (const section of sections) {
+            section.material.uniforms.uIsHover.value = false;
+            section.material.depthWrite = false;
+        }
+        return;
+    }
 
-	const newActive = hit[0].object.userData.id;
-	if (activeSection === newActive) return;
+    const newActive = hit[0].object.userData.id;
+    if (activeSection === newActive) return;
 
-	activeSection = newActive;
-	hideLabels();
-	showLabel(activeSection);
+    activeSection = newActive;
+    hideLabels();
+    showLabel(activeSection);
 
-	for (const section of sections) {
-		section.material.uniforms.uIsHover.value = true;
-		section.material.depthWrite = true;
-	}
+    for (const section of sections) {
+        section.material.uniforms.uIsHover.value = true;
+        section.material.depthWrite = true;
+    }
 
-	sections.forEach((s, i) => {
-		s.userData.targetT = i <= activeSection ? 1 : 0;
+    sections.forEach((s, i) => {
+        s.userData.targetT = i <= activeSection ? 1 : 0;
 
-		// animate icons
-		if (icons && icons[activeSection]) {
-			const icon = icons[activeSection];
-			icon.material.color.set('#002B5B');
-			icon.scale.setScalar(0.4);
-		}
+        // animate icons
+        if (icons && icons[activeSection]) {
+            const icon = icons[activeSection];
+            icon.material.color.set('#002B5B');
+            icon.scale.setScalar(0.4);
+        }
 
-	});
+    });
 }
 
 function updateSections(delta) {
-	const speed = 6;
+    const speed = 6;
 
-	sections.forEach((section) => {
-		const t = section.userData.t;
-		const target = section.userData.targetT;
+    sections.forEach((section) => {
+        const t = section.userData.t;
+        const target = section.userData.targetT;
 
-		const newT = THREE.MathUtils.lerp(t, target, 1 - Math.exp(-speed * delta));
+        const newT = THREE.MathUtils.lerp(t, target, 1 - Math.exp(-speed * delta));
 
-		section.userData.t = newT;
-		section.position.y = section.userData.y + newT * 0.7;
+        section.userData.t = newT;
+        section.position.y = section.userData.y + newT * 0.7;
 
-		section.traverse(child => {
-			if (child.userData.isTopFace || child.userData.isBottomFace) {
-				const visible = activeSection >= 0;
-				child.material.opacity = visible ? 1 : 0;
-			}
-		});
-	});
+        section.traverse(child => {
+            if (child.userData.isTopFace || child.userData.isBottomFace) {
+                const visible = activeSection >= 0;
+                child.material.opacity = visible ? 1 : 0;
+            }
+        });
+    });
 
 }
 
 function onWindowResize() {
-	camera.aspect = window.innerWidth/window.innerHeight;
-	camera.updateProjectionMatrix();
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	updateGrass();
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    updateGrass();
 }
 
 function animate() {
 
-	timer.update();
-	TWEEN.update();
-	const delta = timer.getDelta();
+    timer.update();
+    TWEEN.update();
+    const delta = timer.getDelta();
 
-	raycasterUpdate();
+    raycasterUpdate();
 
-	pyramidGroupInternal.rotation.y += delta;
+    pyramidGroupInternal.rotation.y += delta;
 
-	for (const section of sections) {
-		section.material.uniforms.uTime.value = timer.getElapsed();
-	}
+    for (const section of sections) {
+        section.material.uniforms.uTime.value = timer.getElapsed();
+    }
 
-	// grass
-	// if (plane) {
-		// 	plane.rotation.y = THREE.MathUtils.lerp(0, -THREE.MathUtils.degToRad(2), mouse.x);
-		// 	plane.rotation.x = THREE.MathUtils.lerp(0, THREE.MathUtils.degToRad(2), mouse.y);
-		// }
-
-	// skyMat.uniforms['time'].value = performance.now() * 0.001;
-
-	updateSections(delta);
-	renderer.render(scene, camera);
+    clouds.update(delta, camera);
+    updateSections(delta);
+    renderer.render(scene, camera);
 }
 
 init();
