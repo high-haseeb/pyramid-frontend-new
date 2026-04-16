@@ -22,7 +22,7 @@
 html, body {
 	margin: 0;
 	padding: 0;
-	background: var(--color-bg);
+	background: #7AB7FF;
 	color: var(--color-fg);
 	font-family: sans;
 	overflow: hidden;
@@ -31,19 +31,19 @@ html, body {
 
 #fmis {
 	position: absolute;
-	top: 2rem; left: 1rem;
+	top: calc(0.25rem * 10); left: calc(0.25rem * 10);
 	z-index: 10;
 	font-family: "SF Pro Display";
-	line-height: 1;
+	line-height: calc(0.25rem * 7);
 	font-weight: bold;
 	color: var(--color-fg);
-	font-size: 1.4rem;
+	font-size: 1.8rem;
 	text-decoration: none;
 	margin: 0;
 	cursor: pointer;
 }
 #fmis>span {
-	font-weight: 600;
+	font-weight: 400;
 }
 #farm-name {
 	font-family: "Playfair Display", serif;
@@ -88,11 +88,11 @@ html, body {
 @keyframes slide-in {
 	from {
 		opacity: 0;
-		transform: translate(0, 50%);
+		transform: translate(0, -30%);
 	}
 	to {
 		opacity: 1;
-		transform: translate(0, 0);
+		transform: translate(0, 0%);
 	}
 }
 
@@ -103,7 +103,7 @@ html, body {
 	}
 	to {
 		opacity: 0;
-		transform: translate(0, -50%);
+		transform: translate(0, -30%);
 	}
 }
 
@@ -115,34 +115,35 @@ html, body {
 	animation: slide-out 400ms ease-in-out forwards;
 }
 
-.bottom-label {
-	position: absolute;
-	bottom: 1rem; left: 1rem;
-	z-index: 10;
-	text-shadow: 2px 2px 4px #000;
-	color: white;
-}
-.bottom-label-name {
-	font-weight: bold;
-	font-size: 3rem;
-	letter-spacing: -2px;
-}
-.bottom-label-desc {
-	font-weight: normal;
-	font-size: 1.2rem;
-}
+/* .bottom-label { */
+/* 	position: absolute; */
+/* 	bottom: 1rem; left: 1rem; */
+/* 	z-index: 10; */
+/* 	text-shadow: 2px 2px 4px #000; */
+/* 	color: white; */
+/* } */
+/* .bottom-label-name { */
+/* 	font-weight: bold; */
+/* 	font-size: 3rem; */
+/* 	letter-spacing: -2px; */
+/* } */
+/* .bottom-label-desc { */
+/* 	font-weight: normal; */
+/* 	font-size: 1.2rem; */
+/* } */
 .hover-label {
-	text-shadow: 2px 2px 4px #000;
+	text-shadow: 1px 1px 4px #444;
 	color: white;
 }
 .hover-label-name {
 	font-weight: bold;
-	font-size: 2rem;
+	font-size: 3.5rem;
 	letter-spacing: -2px;
+    line-height: 0.8;
 }
 .hover-label-desc {
-	font-weight: 600;
-	font-size: 1rem;
+	font-weight: normal;
+	font-size: 1.3rem;
 }
 
 /* @keyframes x-in { */

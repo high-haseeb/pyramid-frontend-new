@@ -107,7 +107,7 @@ export class CloudSystem {
             const cloud = {
                 position: new Vector3(
                     rand() * 2 - 1,
-                    rand() + 2,  // 2 .. 3
+                    3.0,  // 2 .. 3
                     rand() * 2 - 1
                 ).multiply(boundsVec),
 

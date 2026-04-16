@@ -96,8 +96,8 @@ function setupLabels() {
 
 			labelEl.style.zIndex = '100';
 			labelEl.style.position = 'absolute';
-			labelEl.style.top = `calc(27% + ${i*5}rem)`;
-			labelEl.style.left = '54%';
+			labelEl.style.top = `calc(24% + ${i*5.8}rem)`;
+			labelEl.style.left = '53%';
 
 			labelEl.style.opacity = '0.5';
 
@@ -260,8 +260,8 @@ async function setupPyramid() {
 		const bottom = new THREE.Mesh(bottomGeo, faceMat.clone());
 		bottom.userData.isBottomFace = true;
 		if (i == numSections - 1) {
-			bottom.userData.isBottomFace = false;
-			bottom.material = mat;
+			// bottom.userData.isBottomFace = false;
+			// bottom.material = mat;
 		}
 		bottom.userData.sectionId = i;
 		bottom.position.y = -sectionHeight / 2;
@@ -312,17 +312,17 @@ async function setupPyramid() {
 }
 
 function lighting() {
-	RectAreaLightUniformsLib.init();
-
-	const lightD = new THREE.RectAreaLight("lightblue", 2, 0.2, 20); 
-	lightD.position.set(0, 0, 3);
-	lightD.lookAt(0, 1, 0);
-	scene.add(lightD)
-
-	const dirLight = new THREE.DirectionalLight("purple", 1);
-	dirLight.position.set(-1, 1, 0);
-	dirLight.lookAt(0, 0, 0);
-	scene.add(dirLight);
+	// RectAreaLightUniformsLib.init();
+	//
+	// const lightD = new THREE.RectAreaLight("lightblue", 2, 0.2, 20); 
+	// lightD.position.set(0, 0, 3);
+	// lightD.lookAt(0, 1, 0);
+	// scene.add(lightD)
+	//
+	// const dirLight = new THREE.DirectionalLight("purple", 1);
+	// dirLight.position.set(-1, 1, 0);
+	// dirLight.lookAt(0, 0, 0);
+	// scene.add(dirLight);
 }
 
 function updateGrass() {
@@ -330,7 +330,7 @@ function updateGrass() {
 	const height = 2 * Math.tan(vFOV / 2) * camera.position.z;
 	const width = height * camera.aspect;
 
-	const f = 1.2;
+	const f = 0.35;
 	let planeWidth = width * f;
 	let planeHeight = planeWidth / textureAspect;
 
@@ -342,47 +342,73 @@ function updateGrass() {
 }
 
 async function grassPlane() {
-    const grassmap = await loader.loadAsync(`${BASE}grass.webp`);
+    const grassmap = await loader.load(`${BASE}grass.webp`);
 	grassmap.colorSpace = THREE.SRGBColorSpace;
-	textureAspect = grassmap.width/grassmap.height;
 
 	const geo = new THREE.PlaneGeometry(1, 1);
 	const mat = new THREE.MeshBasicMaterial({ map: grassmap, transparent: true });
 	plane = new THREE.Mesh(geo, mat);
-	plane.position.y = -0.8;
-	plane.position.z = -4;
-
-	updateGrass();
-
+    plane.scale.set(50.0,9/16*50.0,1.0);
+    plane.position.set(0, -2.0, -50);
 	scene.add(plane);
+}
+
+function updateCamera()
+{
+    const aspect = window.innerWidth/window.innerHeight;
+
+    if (aspect > 3)
+    {
+        camera.fov = 40;
+        camera.position.z = 16;
+    }
+    else if (aspect > 4)
+    { // ultrawide (e.g. 32:9)
+        camera.fov = 30;
+        camera.position.z = 14;
+    }
+    else if (window.innerWidth < 768)
+    {
+        camera.fov = 50;
+        camera.position.z = 18;
+    }
+    else
+    {
+        camera.fov = 75;
+        camera.position.z = 14.5;
+    }
+
+    camera.updateProjectionMatrix();
 }
 
 async function init() {
 
-	camera = new THREE.PerspectiveCamera(25, window.innerWidth/window.innerHeight, 0.1, 1000);
-	camera.position.set(0, 0.8, 15);
+	camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 100);
+	camera.position.set(0, 0.8, 14);
 	camera.lookAt(0, 0, 0);
-	camera.zoom = 1.2;
+	camera.zoom = 4;
 	camera.updateProjectionMatrix();
+    updateCamera();
 
 	scene = new THREE.Scene();
-    scene.background = new THREE.Color("skyblue");
+    scene.background = new THREE.Color("#7AB7FF");
 
 	const canvas = document.getElementById("content");
 	renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.setAnimationLoop(animate);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
 	//renderer.toneMappingExposure = 0.4;
 
-	scene.add(new THREE.AmbientLight('white', 10));
+	scene.add(new THREE.AmbientLight('white', 4));
 
     { // Clouds
         const cloudTexture = new THREE.TextureLoader().load(`${BASE}/cloud.png`);
         clouds = new CloudSystem({ texture: cloudTexture });
 
         clouds.addCloud({
-            segments: 15,
+            segments: 5,
             bounds:   [6, 1, 4],
             volume:   1.5,
             color:    "white",
@@ -629,7 +655,7 @@ function raycasterUpdate() {
         // animate icons
         if (icons && icons[activeSection]) {
             const icon = icons[activeSection];
-            icon.material.color.set('#002B5B');
+            icon.material.color.set('#2080ff');
             icon.scale.setScalar(0.4);
         }
 
@@ -661,8 +687,9 @@ function updateSections(delta) {
 function onWindowResize() {
     camera.aspect = window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
+    updateCamera();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    updateGrass();
+    // updateGrass();
 }
 
 function animate() {
